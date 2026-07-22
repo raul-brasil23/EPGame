@@ -1,3 +1,6 @@
+package Entities;
+
+import Utils.State;
 
 public abstract class Entity {
 	protected State state;
@@ -16,7 +19,9 @@ public abstract class Entity {
 		this.radius = radius;
 	}
 	
-	public abstract void update ();
+	public abstract void update (long currentTime, long delta);
+
+	public abstract void draw (long currentTime);
 
 	public State getState() { return state; }
 	public void setState(State state) { this.state = state; }

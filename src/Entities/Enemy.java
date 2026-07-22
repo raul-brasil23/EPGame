@@ -1,16 +1,25 @@
+package Entities;
 
-public abstract class Enemy extends Entity{
-	private double V;					// velocidades
-	private double angle;				// ângulos (indicam direção do movimento)
-	private double RV;					// velocidades de rotação
-	private double explosion_start = 0;			// instantes dos inícios das explosões
-	private double explosion_end = 0;			// instantes dos finais da explosões
-	// nextEnemy
+import Utils.State;
+
+public abstract class Enemy extends Ship{
+	protected double V;					// velocidades
+	protected double angle;				// ângulos (indicam direção do movimento)
+	protected double RV;					// velocidades de rotação
 	
 	public Enemy (State state, double x, double y, double v, double angle, double rv, double radius) {
-		super (state, x, y, radius);
+		super (state, x, y, 0.0, 0.0, radius);
 		this.V = v;
 		this.angle = angle;
 		this.RV = rv;
 	}
+
+	public double getV() { return V; }
+	public void setV(double v) { this.V = v; }
+
+	public double getAngle() { return angle; }
+	public void setAngle(double angle) { this.angle = angle; }
+
+	public double getRV() { return RV; }
+	public void setRV(double rv) { this.RV = rv; }
 }
