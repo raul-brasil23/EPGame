@@ -5,6 +5,7 @@ import Managers.EnemyManager;
 import Managers.LevelManager;
 import Managers.ProjectileManager;
 import Utils.GameLib;
+import Utils.State;
 
 /***********************************************************************/
 /*                                                                     */
@@ -62,6 +63,7 @@ public class Main {
 			}
 			
 			if(GameLib.iskeyPressed(GameLib.KEY_ESCAPE)) {
+				System.out.println("Já tá desistindo? :(");
 				running = false;
 			}
 			
@@ -71,6 +73,11 @@ public class Main {
 			
 			backgroundManager.update(delta);
 			player.update(currentTime, delta);
+
+			if (player.getState() == State.INACTIVE) {
+				System.out.println("GAME OVER! A nave foi destruída.");
+				running = false;
+			}
 
 			levelManager.update(currentTime, enemyManager, projectileManager);
 

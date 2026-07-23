@@ -14,47 +14,45 @@ public class CollisionManager {
         // 1. Colisões do Player contra os inimigos e tiros inimigos
         if (player.getState() == State.ACTIVE) {
             
-            // Player vs Tiros Inimigos
-            for (EnemyProjectile ep : projectileManager.getEnemyProjectiles()) {
-                if (ep.getState() == State.ACTIVE) {
-                    double dist = calculateDistance(player.getX(), player.getY(), ep.getX(), ep.getY());
-                    if (dist < (player.getRadius() + ep.getRadius()) * 0.8) {
-                        
-                        // Reduz o HP do jogador
-                        player.setHp(player.getHp() - 1); 
-                        ep.setState(State.INACTIVE);
-
-                        // Game Over se o HP zerar
-                        if (player.getHp() <= 0) {
-                            player.explode(currentTime, 2000);
-                            System.out.println("GAME OVER! Você ficou sem vida.");
-                            System.exit(0); 
+            // Só verifica colisões se o jogador NÃO estiver invulnerável
+            if (!player.isInvulnerable(currentTime)) {
+                
+                // Player vs Tiros Inimigos
+                for (EnemyProjectile ep : projectileManager.getEnemyProjectiles()) {
+                    if (ep.getState() == State.ACTIVE) {
+                        double dist = calculateDistance(player.getX(), player.getY(), ep.getX(), ep.getY());
+                        if (dist < (player.getRadius() + ep.getRadius()) * 0.8) {
+                            
+                            player.takeDamage(currentTime); 
+                            ep.setState(State.INACTIVE);
+                            break; // Sai do loop para garantir que tome apenas 1 tiro por vez
                         }
                     }
                 }
             }
 
-            // Player vs Inimigos (Navinhas e Chefes)
-            for (Enemy enemy : enemyManager.getEnemies()) {
-                if (enemy.getState() == State.ACTIVE) {
-                    double dist = calculateDistance(player.getX(), player.getY(), enemy.getX(), enemy.getY());
-                    if (dist < (player.getRadius() + enemy.getRadius()) * 0.8) {
-                        
-                        player.setHp(player.getHp() - 1);
-                        
-                        if (player.getHp() <= 0) {
-                            player.explode(currentTime, 2000);
-                            System.out.println("GAME OVER! Você bateu em uma nave.");
-                            System.exit(0);
-                        }
-
-                        // Lógica de dano para o inimigo que bateu no jogador
-                        if (enemy instanceof Boss) {
-                            Boss boss = (Boss) enemy;
-                            boss.takeDamage(1);
-                            if (boss.getHp() <= 0) boss.explode(currentTime, 500);
-                        } else {
-                            enemy.explode(currentTime, 500);
+            // Verifica de novo, pois o jogador pode ter tomado um tiro e ficado invulnerável no bloco acima
+            if (!player.isInvulnerable(currentTime)) {
+                
+                // Player vs Inimigos (Navinhas e Chefes)
+                for (Enemy enemy : enemyManager.getEnemies()) {
+                    if (enemy.getState() == State.ACTIVE) {
+                        double dist = calculateDistance(player.getX(), player.getY(), enemy.getX(), enemy.getY());
+                        if (dist < (player.getRadius() + enemy.getRadius()) * 0.8) {
+                            
+                            // O Player toma dano e ATIVA SUA INVULNERABILIDADE
+                            player.takeDamage(currentTime);
+                            
+                            // Lógica de dano para o inimigo (Agora restrita a 1 vez por colisão/segundo)
+                            if (enemy instanceof Boss) {
+                                Boss boss = (Boss) enemy;
+                                boss.takeDamage(1);
+                                if (boss.getHp() <= 0) boss.explode(currentTime, 500);
+                            } else {
+                                enemy.explode(currentTime, 500);
+                            }
+                            
+                            break; // Sai do loop para não dar dano em dois inimigos no mesmo frame
                         }
                     }
                 }

@@ -85,8 +85,9 @@ public class EnemyManager {
                 }
             } else if (enemy instanceof DiamondEnemy) {
                 DiamondEnemy de = (DiamondEnemy) enemy;
-                if (de.canShoot()) {
+                if (de.isReadyToShoot()) {
                     projManager.spawnDiamondEnemyProjectiles(de);
+                    de.resetShot();
                 }
             }
         }

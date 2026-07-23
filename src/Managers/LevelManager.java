@@ -50,8 +50,7 @@ public class LevelManager {
 
         String levelPath = "Levels/" + levelFiles.get(levelNumber);
 
-        try {
-            Scanner scanner = new Scanner(new File(levelPath));
+        try (Scanner scanner = new Scanner(new File(levelPath))) { 
             
             while (scanner.hasNext()) {
                 String entity = scanner.next(); 
@@ -72,7 +71,6 @@ public class LevelManager {
                     spawners.add(new Spawner(entity, type, when, x, y));
                 }
             }
-            scanner.close();
         } catch (FileNotFoundException e) {
             System.out.println("Erro: Arquivo da fase não encontrado: " + levelPath);
             System.exit(1);
@@ -95,7 +93,6 @@ public class LevelManager {
             }
         }
 
-        // --- LÓGICA DE TRANSIÇÃO DE FASE CORRIGIDA ---
         // A fase só é finalizada quando o chefe morre
         if (enemyManager.isBossDefeated()) {
             

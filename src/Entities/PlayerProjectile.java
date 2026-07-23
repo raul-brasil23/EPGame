@@ -13,12 +13,11 @@ public class PlayerProjectile extends Projectile {
 	
 	@Override
 	public void update(long currentTime, long delta) {
+		// Chama o movimento matemático que agora está na superclasse
+		super.update(currentTime, delta);
+		
 		if (this.state == State.ACTIVE) {
-			// Movimentação
-			this.X += this.VX * delta;
-			this.Y += this.VY * delta;
-			
-			// Verificando se o projétil saiu da tela (passou do topo)
+			// Verifica apenas se o projétil saiu da tela (passou do topo)
 			if (this.Y < 0) {
 				this.state = State.INACTIVE;
 			}

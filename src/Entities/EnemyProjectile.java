@@ -14,12 +14,11 @@ public class EnemyProjectile extends Projectile {
 
 	@Override
 	public void update(long currentTime, long delta) {
+		// Chama o movimento matemático que agora está na superclasse
+		super.update(currentTime, delta);
+		
 		if (this.state == State.ACTIVE) {
-			// Movimentação
-			this.X += this.VX * delta;
-			this.Y += this.VY * delta;
-			
-			// Verificando se o projétil saiu da tela (passou do chão)
+			// Verifica apenas se o projétil saiu da tela (passou do chão)
 			if (this.Y > GameLib.HEIGHT) {
 				this.state = State.INACTIVE;
 			}

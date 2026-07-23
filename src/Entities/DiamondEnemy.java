@@ -65,12 +65,11 @@ public class DiamondEnemy extends Enemy {
 		}
 	}
 
-	// Consulta se o inimigo atirou e já desliga a variável para não atirar infinitamente
-	public boolean canShoot() {
-		if (this.canShoot) {
-			this.canShoot = false; 
-			return true;
-		}
-		return false;
+	public boolean isReadyToShoot() { 
+    	return this.canShoot; 
+	}
+	
+	public void resetShot() { 
+    	this.canShoot = false; 
 	}
 }
