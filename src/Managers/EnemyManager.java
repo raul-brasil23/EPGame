@@ -4,7 +4,7 @@ import Entities.Enemy;
 import Entities.CircleEnemy;
 import Entities.DiamondEnemy;
 import Entities.Player;
-import Utils.GameLib;
+import Utils.Spawner;
 import Utils.State;
 
 import java.util.ArrayList;
@@ -12,41 +12,42 @@ import java.util.List;
 
 public class EnemyManager {
     private List<Enemy> enemies;
-    private long nextEnemy1;
-    private long nextEnemy2;
-    private double enemy2_spawnX;
-    private int enemy2_count;
 
     public EnemyManager(long currentTime) {
         this.enemies = new ArrayList<>();
-        this.nextEnemy1 = currentTime + 2000;
-        this.nextEnemy2 = currentTime + 7000;
-        this.enemy2_spawnX = GameLib.WIDTH * 0.20;
-        this.enemy2_count = 0;
+    }
+
+    public void spawnEntity(Spawner spawn) {
+        String entity = spawn.getEntity();
+        int type = spawn.getType();
+        double x = spawn.getX();
+        double y = spawn.getY();
+
+        double v = 0.2; // v: Velocidade de movimentação padrão
+        double angle = (3 * Math.PI) / 2; // angle: Ângulo em radianos (apontando para baixo)
+        double rv = 0.0; // rv: Velocidade de rotação
+        long nextShot = System.currentTimeMillis() + 500; // nextShot: Tempo para atirar (meio segundo após nascer)
+
+        if (entity.equals("INIMIGO")) {
+            // Verifica qual é o design do inimigo (1 ou 2, conforme PDF)
+            if (type == 1) {
+                // Exemplo: cria o inimigo básico que atira reto
+                enemies.add(new CircleEnemy(x, y, v, angle, rv, nextShot)); 
+            } else if (type == 2) {
+                // Exemplo: cria o inimigo que atira na diagonal
+                enemies.add(new DiamondEnemy(x, y, v, angle, rv)); 
+            }
+        } 
+        // else if (entidade.equals("CHEFE")) {
+        //     int hpChefe = spawn.getHp();
+        //     if (tipo == 1) {
+        //         enemies.add(new BossType1(x, y, hpChefe));
+        //     }
+        // }
     }
 
     // Agora o ProjectileManager entra como parâmetro para criar os tiros
     public void update(long currentTime, long delta, Player player, ProjectileManager projManager) {
-        
-        if (currentTime > nextEnemy1) {
-            double x = Math.random() * (GameLib.WIDTH - 20.0) + 10.0;
-            double v = 0.20 + Math.random() * 0.15;
-            enemies.add(new CircleEnemy(x, -10.0, v, (3 * Math.PI) / 2, 0.0, currentTime + 500));
-            this.nextEnemy1 = currentTime + 500;
-        }
-
-        if (currentTime > nextEnemy2) {
-            enemies.add(new DiamondEnemy(this.enemy2_spawnX, -10.0, 0.42, (3 * Math.PI) / 2, 0.0));
-            this.enemy2_count++;
-            
-            if (this.enemy2_count < 10) {
-                this.nextEnemy2 = currentTime + 120;
-            } else {
-                this.enemy2_count = 0;
-                this.enemy2_spawnX = Math.random() > 0.5 ? GameLib.WIDTH * 0.2 : GameLib.WIDTH * 0.8;
-                this.nextEnemy2 = (long) (currentTime + 3000 + Math.random() * 3000);
-            }
-        }
 
         for (Enemy enemy : enemies) {
             enemy.update(currentTime, delta);

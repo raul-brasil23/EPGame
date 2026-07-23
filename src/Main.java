@@ -2,6 +2,7 @@ import Entities.Player;
 import Managers.BackgroundManager;
 import Managers.CollisionManager;
 import Managers.EnemyManager;
+import Managers.LevelManager;
 import Managers.ProjectileManager;
 import Utils.GameLib;
 
@@ -39,6 +40,7 @@ public class Main {
 		EnemyManager enemyManager = new EnemyManager(currentTime);
 		ProjectileManager projectileManager = new ProjectileManager();
 		CollisionManager collisionManager = new CollisionManager();
+		LevelManager levelManager = new LevelManager("Levels/level_config.txt", currentTime);
 						
 		/* iniciando interface gráfica */
 		GameLib.initGraphics();
@@ -69,6 +71,9 @@ public class Main {
 			
 			backgroundManager.update(delta);
 			player.update(currentTime, delta);
+
+			levelManager.update(currentTime, enemyManager);
+
 			enemyManager.update(currentTime, delta, player, projectileManager);
 			projectileManager.update(currentTime, delta);
 			
