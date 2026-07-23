@@ -1,6 +1,8 @@
 package Managers;
 
 import Utils.Spawner;
+import Entities.ShieldPowerUp;
+import Entities.TripleShotPowerUp;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -77,8 +79,8 @@ public class LevelManager {
         }
     }
 
-    // Atualizado para receber o ProjectileManager e passar para o EnemyManager
-    public void update(long currentTime, EnemyManager enemyManager, ProjectileManager projManager) {
+    // Atualizado para receber também o PowerUpManager
+    public void update(long currentTime, EnemyManager enemyManager, ProjectileManager projManager, PowerUpManager powerUpManager) {
         long timeOnLevel = currentTime - levelStartTime;
         
         // Spawn de entidades baseado no tempo cronológico
@@ -86,7 +88,23 @@ public class LevelManager {
             Spawner spawn = spawners.get(0);
             
             if (timeOnLevel >= spawn.getSpawnTime()) {
-                enemyManager.spawnEntity(spawn, projManager);
+                
+                // VERIFICA SE A ENTIDADE É UM POWER-UP
+                // Nota: Substitua "getEntity()" pelo getter correto da sua classe Spawner (ex: getName(), getTypeString())
+                if (spawn.getEntity().equals("POWERUP")) {
+                    
+                    // Tipo 1 = Escudo | Tipo 2 = Tiro Triplo
+                    if (spawn.getType() == 1) {
+                        powerUpManager.addPowerUp(new ShieldPowerUp(spawn.getX(), spawn.getY()));
+                    } else if (spawn.getType() == 2) {
+                        powerUpManager.addPowerUp(new TripleShotPowerUp(spawn.getX(), spawn.getY()));
+                    }
+                    
+                } else {
+                    // Se não for Power-Up, manda para o EnemyManager normalmente
+                    enemyManager.spawnEntity(spawn, projManager);
+                }
+                
                 spawners.remove(0); 
             } else {
                 break;

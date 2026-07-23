@@ -20,10 +20,30 @@ public class ProjectileManager {
     }
 
     // Cria o tiro do jogador
+    // ATUALIZADO: Verifica o poder do jogador e cria 1 ou 3 tiros
     public void spawnPlayerProjectile(Player player) {
-        double x = player.getX();
-        double y = player.getY() - 2 * player.getRadius();
-        playerProjectiles.add(new PlayerProjectile(x, y));
+        // Posição do tiro central original
+        double xCenter = player.getX();
+        double yCenter = player.getY() - 2 * player.getRadius();
+        
+        if (player.hasTripleShot()) {
+            // Tiro central
+            playerProjectiles.add(new PlayerProjectile(xCenter, yCenter));
+            
+            // Tiro da esquerda (sai da posição da navinha lateral esquerda)
+            double xLeft = player.getX() - 20;
+            double yLeft = player.getY() + 10 - (player.getRadius());
+            playerProjectiles.add(new PlayerProjectile(xLeft, yLeft));
+            
+            // Tiro da direita (sai da posição da navinha lateral direita)
+            double xRight = player.getX() + 20;
+            double yRight = player.getY() + 10 - (player.getRadius());
+            playerProjectiles.add(new PlayerProjectile(xRight, yRight));
+            
+        } else {
+            // Tiro único padrão
+            playerProjectiles.add(new PlayerProjectile(xCenter, yCenter));
+        }
     }
 
     // Cria o tiro do Inimigo 1 (um único tiro)

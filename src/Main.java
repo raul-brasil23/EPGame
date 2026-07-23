@@ -3,6 +3,7 @@ import Managers.BackgroundManager;
 import Managers.CollisionManager;
 import Managers.EnemyManager;
 import Managers.LevelManager;
+import Managers.PowerUpManager;
 import Managers.ProjectileManager;
 import Utils.GameLib;
 import Utils.State;
@@ -40,6 +41,7 @@ public class Main {
 		EnemyManager enemyManager = new EnemyManager();
 		ProjectileManager projectileManager = new ProjectileManager();
 		CollisionManager collisionManager = new CollisionManager();
+		PowerUpManager powerUpManager = new PowerUpManager();
 		LevelManager levelManager = new LevelManager("Levels/level_config.txt", currentTime);
 		Player player = new Player(GameLib.WIDTH / 2, GameLib.HEIGHT * 0.90, currentTime, levelManager.getStartHP());
 						
@@ -79,12 +81,11 @@ public class Main {
 				running = false;
 			}
 
-			levelManager.update(currentTime, enemyManager, projectileManager);
-
+			levelManager.update(currentTime, enemyManager, projectileManager, powerUpManager);
 			enemyManager.update(currentTime, delta, player, projectileManager);
 			projectileManager.update(currentTime, delta);
-			
-			collisionManager.checkCollisions(player, enemyManager, projectileManager, currentTime);
+			powerUpManager.update(currentTime, delta);
+			collisionManager.checkCollisions(player, enemyManager, projectileManager, powerUpManager, currentTime);
 
 			/********************************************/
 			/* 3. Desenho da cena                       */
@@ -94,6 +95,7 @@ public class Main {
 			player.draw(currentTime);
 			enemyManager.draw(currentTime);
 			projectileManager.draw(currentTime);
+			powerUpManager.draw(currentTime);
 			
 			/* chamada a display() da classe GameLib atualiza o desenho exibido pela interface do jogo. */
 			GameLib.display();

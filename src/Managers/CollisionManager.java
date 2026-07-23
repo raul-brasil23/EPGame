@@ -5,11 +5,15 @@ import Entities.Enemy;
 import Entities.Boss; 
 import Entities.PlayerProjectile;
 import Entities.EnemyProjectile;
+import Entities.PowerUp;
+import Entities.ShieldPowerUp;
+import Entities.TripleShotPowerUp;
 import Utils.State;
 
 public class CollisionManager {
 
-    public void checkCollisions(Player player, EnemyManager enemyManager, ProjectileManager projectileManager, long currentTime) {
+    // Adicionei o PowerUpManager como parâmetro aqui
+    public void checkCollisions(Player player, EnemyManager enemyManager, ProjectileManager projectileManager, PowerUpManager powerUpManager, long currentTime) {
         
         // 1. Colisões do Player contra os inimigos e tiros inimigos
         if (player.getState() == State.ACTIVE) {
@@ -83,6 +87,30 @@ public class CollisionManager {
                             
                             pp.setState(State.INACTIVE);
                         }
+                    }
+                }
+            }
+        }
+
+        // 3. Colisões do Player com os Power-Ups (NOVO BLOCO)
+        if (player.getState() == State.ACTIVE) {
+            for (PowerUp powerUp : powerUpManager.getPowerUps()) {
+                if (powerUp.getState() == State.ACTIVE) {
+                    
+                    double dist = calculateDistance(player.getX(), player.getY(), powerUp.getX(), powerUp.getY());
+                    
+                    // Colisão com os Power-Ups!
+                    if (dist < (player.getRadius() + powerUp.getRadius()) * 0.8) {
+                        
+                        // Verifica qual é o tipo de Power-Up e ativa o poder correspondente
+                        if (powerUp instanceof ShieldPowerUp) {
+                            player.activateShield();
+                        } else if (powerUp instanceof TripleShotPowerUp) {
+                            player.activateTripleShot();
+                        }
+                        
+                        // Desativa a bolinha após o jogador pegá-la
+                        powerUp.setState(State.INACTIVE);
                     }
                 }
             }
