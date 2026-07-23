@@ -3,14 +3,14 @@ package Entities;
 import Utils.GameLib;
 import java.awt.Color;
 
-public class Star {
+public class Background {
 	private double X;
 	private double Y;
 	private double speed;
 	private Color color;
 	private int size;
 	
-	public Star(double x, double y, double speed, Color color, int size) {
+	public Background(double x, double y, double speed, Color color, int size) {
 		this.X = x;
 		this.Y = y;
 		this.speed = speed;
