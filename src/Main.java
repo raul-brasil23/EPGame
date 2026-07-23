@@ -35,12 +35,12 @@ public class Main {
 		long currentTime = System.currentTimeMillis();
 
 		/* Inicialização dos Gerenciadores (Managers) e do Player */
-		Player player = new Player(GameLib.WIDTH / 2, GameLib.HEIGHT * 0.90, currentTime);
 		BackgroundManager backgroundManager = new BackgroundManager();
-		EnemyManager enemyManager = new EnemyManager(currentTime);
+		EnemyManager enemyManager = new EnemyManager();
 		ProjectileManager projectileManager = new ProjectileManager();
 		CollisionManager collisionManager = new CollisionManager();
 		LevelManager levelManager = new LevelManager("Levels/level_config.txt", currentTime);
+		Player player = new Player(GameLib.WIDTH / 2, GameLib.HEIGHT * 0.90, currentTime, levelManager.getStartHP());
 						
 		/* iniciando interface gráfica */
 		GameLib.initGraphics();
@@ -72,7 +72,7 @@ public class Main {
 			backgroundManager.update(delta);
 			player.update(currentTime, delta);
 
-			levelManager.update(currentTime, enemyManager);
+			levelManager.update(currentTime, enemyManager, projectileManager);
 
 			enemyManager.update(currentTime, delta, player, projectileManager);
 			projectileManager.update(currentTime, delta);

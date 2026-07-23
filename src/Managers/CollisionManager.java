@@ -2,6 +2,7 @@ package Managers;
 
 import Entities.Player;
 import Entities.Enemy;
+import Entities.Boss; 
 import Entities.PlayerProjectile;
 import Entities.EnemyProjectile;
 import Utils.State;
@@ -18,19 +19,43 @@ public class CollisionManager {
                 if (ep.getState() == State.ACTIVE) {
                     double dist = calculateDistance(player.getX(), player.getY(), ep.getX(), ep.getY());
                     if (dist < (player.getRadius() + ep.getRadius()) * 0.8) {
-                        player.explode(currentTime, 2000);
+                        
+                        // Reduz o HP do jogador
+                        player.setHp(player.getHp() - 1); 
                         ep.setState(State.INACTIVE);
+
+                        // Game Over se o HP zerar
+                        if (player.getHp() <= 0) {
+                            player.explode(currentTime, 2000);
+                            System.out.println("GAME OVER! Você ficou sem vida.");
+                            System.exit(0); 
+                        }
                     }
                 }
             }
 
-            // Player vs Inimigos (Navinhas)
+            // Player vs Inimigos (Navinhas e Chefes)
             for (Enemy enemy : enemyManager.getEnemies()) {
                 if (enemy.getState() == State.ACTIVE) {
                     double dist = calculateDistance(player.getX(), player.getY(), enemy.getX(), enemy.getY());
                     if (dist < (player.getRadius() + enemy.getRadius()) * 0.8) {
-                        player.explode(currentTime, 2000);
-                        enemy.explode(currentTime, 500);
+                        
+                        player.setHp(player.getHp() - 1);
+                        
+                        if (player.getHp() <= 0) {
+                            player.explode(currentTime, 2000);
+                            System.out.println("GAME OVER! Você bateu em uma nave.");
+                            System.exit(0);
+                        }
+
+                        // Lógica de dano para o inimigo que bateu no jogador
+                        if (enemy instanceof Boss) {
+                            Boss boss = (Boss) enemy;
+                            boss.takeDamage(1);
+                            if (boss.getHp() <= 0) boss.explode(currentTime, 500);
+                        } else {
+                            enemy.explode(currentTime, 500);
+                        }
                     }
                 }
             }
@@ -42,9 +67,22 @@ public class CollisionManager {
                 for (Enemy enemy : enemyManager.getEnemies()) {
                     if (enemy.getState() == State.ACTIVE) {
                         double dist = calculateDistance(pp.getX(), pp.getY(), enemy.getX(), enemy.getY());
-                        // Diferente do player, a colisão aqui usa apenas o raio do inimigo
+                        
                         if (dist < enemy.getRadius()) {
-                            enemy.explode(currentTime, 500);
+                            
+                            // Lógica do chefe tomar dano
+                            if (enemy instanceof Boss) {
+                                Boss boss = (Boss) enemy;
+                                boss.takeDamage(1); 
+                                
+                                if (boss.getHp() <= 0) {
+                                    boss.explode(currentTime, 500);
+                                }
+                            } else {
+                                // Inimigo comum explode com 1 tiro
+                                enemy.explode(currentTime, 500);
+                            }
+                            
                             pp.setState(State.INACTIVE);
                         }
                     }
@@ -53,7 +91,6 @@ public class CollisionManager {
         }
     }
 
-    // Método auxiliar para não repetir o cálculo da distância euclidiana toda hora
     private double calculateDistance(double x1, double y1, double x2, double y2) {
         double dx = x1 - x2;
         double dy = y1 - y2;

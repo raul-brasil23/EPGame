@@ -14,44 +14,39 @@ public class LevelManager {
 
     private int currentLevel;
     private List<Spawner> spawners;
-    private long levelStartTime; // Em que momento a fase inicia
+    private long levelStartTime;
 
     public LevelManager(String configFile, long currentTime) {
         levelFiles = new ArrayList<>();
         spawners = new ArrayList<>();
-        currentLevel = 0; // 0 significa a primeira fase na nossa lista
+        currentLevel = 0; 
         
         readConfigFile(configFile);
         loadLevel(currentLevel, currentTime);
     }
 
-    // Lê o arquivo principal (que diz HP, Num Fases e Nomes dos Arquivos)
     private void readConfigFile(String path) {
         try {
             Scanner scanner = new Scanner(new File(path));
             
-            // Lê conforme o formato do PDF:
-            this.startHP = scanner.nextInt(); // <PONTOS DE VIDA DO JOGADOR>
-            this.numberOfLevels = scanner.nextInt();      // <NUMERO DE FASES>
-            scanner.nextLine(); // Pula para a próxima linha
+            this.startHP = scanner.nextInt(); 
+            this.numberOfLevels = scanner.nextInt();      
+            scanner.nextLine(); 
             
-            // Lê o nome dos arquivos de cada fase
             for (int i = 0; i < numberOfLevels; i++) {
                 levelFiles.add(scanner.nextLine().trim());
             }
             scanner.close();
             
         } catch (FileNotFoundException e) {
-            System.out.println("Erro: Arquivo principal não encontrado: " + path);
+            System.out.println("Erro: Arquivo de configuração não encontrado: " + path);
             System.exit(1);
         }
     }
 
-    // Lê o arquivo específico da fase (ex: "fase1.txt")
     private void loadLevel(int levelNumber, long currentTime) {
-        spawners.clear(); // Limpa os eventos da fase anterior
-
-        this.levelStartTime = currentTime; // Zera o cronômetro da fase
+        spawners.clear(); 
+        this.levelStartTime = currentTime; 
 
         String levelPath = "Levels/" + levelFiles.get(levelNumber);
 
@@ -59,7 +54,7 @@ public class LevelManager {
             Scanner scanner = new Scanner(new File(levelPath));
             
             while (scanner.hasNext()) {
-                String entity = scanner.next(); // Lê a primeira palavra (INIMIGO, CHEFE, POWERUP)
+                String entity = scanner.next(); 
                 
                 if (entity.equals("CHEFE")) {
                     int type = scanner.nextInt();
@@ -69,7 +64,7 @@ public class LevelManager {
                     double y = scanner.nextDouble();
                     spawners.add(new Spawner(entity, type, hp, when, x, y));
                 } 
-                else { // Se for INIMIGO ou POWERUP (mesma estrutura)
+                else { 
                     int type = scanner.nextInt();
                     long when = scanner.nextLong();
                     double x = scanner.nextDouble();
@@ -84,37 +79,34 @@ public class LevelManager {
         }
     }
 
-    // Chamado no loop principal para verificar se chegou a hora de spawnar algo
-    public void update(long currentTime, EnemyManager enemyManager) {
+    // Atualizado para receber o ProjectileManager e passar para o EnemyManager
+    public void update(long currentTime, EnemyManager enemyManager, ProjectileManager projManager) {
         long timeOnLevel = currentTime - levelStartTime;
         
-        // Faz o spawn dos inimigos no tempo correto
+        // Spawn de entidades baseado no tempo cronológico
         while (!spawners.isEmpty()) {
             Spawner spawn = spawners.get(0);
             
             if (timeOnLevel >= spawn.getSpawnTime()) {
-                enemyManager.spawnEntity(spawn);
+                enemyManager.spawnEntity(spawn, projManager);
                 spawners.remove(0); 
             } else {
                 break;
             }
         }
 
-        // --- NOVA LÓGICA DE TRANSIÇÃO DE FASE ---
-        // Se a fila de spawns está vazia E a lista de inimigos vivos na tela também está vazia
-        if (spawners.isEmpty() && enemyManager.getEnemies().isEmpty()) {
+        // --- LÓGICA DE TRANSIÇÃO DE FASE CORRIGIDA ---
+        // A fase só é finalizada quando o chefe morre
+        if (enemyManager.isBossDefeated()) {
             
-            currentLevel++; // Avança para o índice da próxima fase na lista
+            currentLevel++; 
             
-            // Verifica se ainda existem fases disponíveis
             if (currentLevel < numberOfLevels) {
                 System.out.println("-> Iniciando fase " + (currentLevel + 1));
-                loadLevel(currentLevel, currentTime);
+                enemyManager.resetPhase(); // Limpa os inimigos da fase velha
+                loadLevel(currentLevel, currentTime); // Carrega e reseta o cronômetro
             } else {
-                // Se o índice for maior ou igual ao total de fases, o jogo acabou
                 System.out.println("-> JOGO FINALIZADO! Você venceu todas as fases!");
-                
-                // Finaliza o processo por enquanto (futuramente você pode colocar uma tela de vitória aqui)
                 System.exit(0); 
             }
         }

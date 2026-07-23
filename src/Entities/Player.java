@@ -7,11 +7,13 @@ import java.awt.Color;
 
 
 public class Player extends Ship {
+	private int hp;
 	private long nextShot;					// instante a partir do qual pode haver um próximo tiro
 	
-	public Player (double x, double y, long currentTime) {
+	public Player (double x, double y, long currentTime, int hp) {
 		super (State.ACTIVE, x, y, 0.25, 0.25, 12.0);
 		this.nextShot = currentTime;
+		this.hp = hp;
 	}
 
 	public void move (long delta) {
@@ -59,6 +61,9 @@ public class Player extends Ship {
 		}
 		return false;
 	}
+
+	public int getHp() { return hp; }
+    public void setHp(int hp) { this.hp = hp; }
 
 	public long getNextShot() { return nextShot; }
 	public void setNextShot(long nextShot) { this.nextShot = nextShot; }
