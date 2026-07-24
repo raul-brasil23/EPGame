@@ -13,6 +13,11 @@ public class ShieldPowerUp extends PowerUp {
     }
 
     @Override
+    public void applyEffect(Player player) {
+        player.getPowerUpController().activateShield();
+    }
+
+    @Override
     public void draw(long currentTime) {
         if (this.state == State.ACTIVE) {
             if (shouldBlink(currentTime)) {

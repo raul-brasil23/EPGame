@@ -12,6 +12,11 @@ public class TripleShotPowerUp extends PowerUp {
     }
 
     @Override
+    public void applyEffect(Player player) {
+        player.getPowerUpController().activateTripleShot();
+    }
+
+    @Override
     public void draw(long currentTime) {
         if (this.state == State.ACTIVE) {
             if (shouldBlink(currentTime)) {

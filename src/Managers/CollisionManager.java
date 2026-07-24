@@ -2,68 +2,43 @@ package Managers;
 
 import Entities.Player;
 import Entities.Enemy;
-import Entities.Boss; 
 import Entities.PlayerProjectile;
 import Entities.EnemyProjectile;
 import Entities.PowerUp;
-import Entities.ShieldPowerUp;
-import Entities.TripleShotPowerUp;
 import Utils.State;
 
 public class CollisionManager {
 
-    // Adicionei o PowerUpManager como parâmetro aqui
     public void checkCollisions(Player player, EnemyManager enemyManager, ProjectileManager projectileManager, PowerUpManager powerUpManager, long currentTime) {
         
-        // 1. Colisões do Player contra os inimigos e tiros inimigos
         if (player.getState() == State.ACTIVE) {
-            
-            // Só verifica colisões se o jogador NÃO estiver invulnerável
             if (!player.isInvulnerable(currentTime)) {
-                
-                // Player vs Tiros Inimigos
                 for (EnemyProjectile ep : projectileManager.getEnemyProjectiles()) {
                     if (ep.getState() == State.ACTIVE) {
                         double dist = calculateDistance(player.getX(), player.getY(), ep.getX(), ep.getY());
                         if (dist < (player.getRadius() + ep.getRadius()) * 0.8) {
-                            
                             player.takeDamage(currentTime); 
                             ep.setState(State.INACTIVE);
-                            break; // Sai do loop para garantir que tome apenas 1 tiro por vez
+                            break; 
                         }
                     }
                 }
             }
 
-            // Verifica de novo, pois o jogador pode ter tomado um tiro e ficado invulnerável no bloco acima
             if (!player.isInvulnerable(currentTime)) {
-                
-                // Player vs Inimigos (Navinhas e Chefes)
                 for (Enemy enemy : enemyManager.getEnemies()) {
                     if (enemy.getState() == State.ACTIVE) {
                         double dist = calculateDistance(player.getX(), player.getY(), enemy.getX(), enemy.getY());
                         if (dist < (player.getRadius() + enemy.getRadius()) * 0.8) {
-                            
-                            // O Player toma dano e ATIVA SUA INVULNERABILIDADE
                             player.takeDamage(currentTime);
-                            
-                            // Lógica de dano para o inimigo (Agora restrita a 1 vez por colisão/segundo)
-                            if (enemy instanceof Boss) {
-                                Boss boss = (Boss) enemy;
-                                boss.takeDamage(1);
-                                if (boss.getHp() <= 0) boss.explode(currentTime, 500);
-                            } else {
-                                enemy.explode(currentTime, 500);
-                            }
-                            
-                            break; // Sai do loop para não dar dano em dois inimigos no mesmo frame
+                            enemy.takeDamage(1, currentTime);
+                            break; 
                         }
                     }
                 }
             }
         }
 
-        // 2. Colisões dos tiros do Player contra os Inimigos
         for (PlayerProjectile pp : projectileManager.getPlayerProjectiles()) {
             if (pp.getState() == State.ACTIVE) {
                 for (Enemy enemy : enemyManager.getEnemies()) {
@@ -71,20 +46,7 @@ public class CollisionManager {
                         double dist = calculateDistance(pp.getX(), pp.getY(), enemy.getX(), enemy.getY());
                         
                         if (dist < enemy.getRadius()) {
-                            
-                            // Lógica do chefe tomar dano
-                            if (enemy instanceof Boss) {
-                                Boss boss = (Boss) enemy;
-                                boss.takeDamage(1); 
-                                
-                                if (boss.getHp() <= 0) {
-                                    boss.explode(currentTime, 500);
-                                }
-                            } else {
-                                // Inimigo comum explode com 1 tiro
-                                enemy.explode(currentTime, 500);
-                            }
-                            
+                            enemy.takeDamage(1, currentTime);
                             pp.setState(State.INACTIVE);
                         }
                     }
@@ -92,24 +54,14 @@ public class CollisionManager {
             }
         }
 
-        // 3. Colisões do Player com os Power-Ups (NOVO BLOCO)
         if (player.getState() == State.ACTIVE) {
             for (PowerUp powerUp : powerUpManager.getPowerUps()) {
                 if (powerUp.getState() == State.ACTIVE) {
-                    
                     double dist = calculateDistance(player.getX(), player.getY(), powerUp.getX(), powerUp.getY());
                     
-                    // Colisão com os Power-Ups!
                     if (dist < (player.getRadius() + powerUp.getRadius()) * 0.8) {
-                        
-                        // Verifica qual é o tipo de Power-Up e ativa o poder correspondente
-                        if (powerUp instanceof ShieldPowerUp) {
-                            player.activateShield();
-                        } else if (powerUp instanceof TripleShotPowerUp) {
-                            player.activateTripleShot();
-                        }
-                        
-                        // Desativa a bolinha após o jogador pegá-la
+                        // POLIMORFISMO PURO APLICADO AO POWER-UP!
+                        powerUp.applyEffect(player);
                         powerUp.setState(State.INACTIVE);
                     }
                 }

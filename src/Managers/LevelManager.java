@@ -102,7 +102,7 @@ public class LevelManager {
                     
                 } else {
                     // Se não for Power-Up, manda para o EnemyManager normalmente
-                    enemyManager.spawnEntity(spawn, projManager);
+                    enemyManager.spawnEntity(spawn);
                 }
                 
                 spawners.remove(0); 
