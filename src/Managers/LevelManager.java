@@ -77,13 +77,19 @@ public class LevelManager {
                     spawners.add(new Spawner(entity, type, when, x, y));
                 }
             }
+            
+            // --- A MÁGICA ACONTECE AQUI ---
+            // Ordena a lista de spawners baseada no tempo (when) em ordem crescente.
+            // Isso garante que o item da posição [0] seja sempre o próximo a aparecer!
+            spawners.sort((s1, s2) -> Long.compare(s1.getSpawnTime(), s2.getSpawnTime()));
+            
         } catch (FileNotFoundException e) {
             System.out.println("Erro: Arquivo da fase não encontrado: " + levelPath);
             System.exit(1);
         }
     }
 
-    // Atualizado para receber também o PowerUpManager
+    // A assinatura permanece limpa, recebendo apenas os managers necessários
     public void update(long currentTime, EnemyManager enemyManager, PowerUpManager powerUpManager) {
         long timeOnLevel = currentTime - levelStartTime;
         
@@ -93,11 +99,8 @@ public class LevelManager {
             
             if (timeOnLevel >= spawn.getSpawnTime()) {
                 
-                // VERIFICA SE A ENTIDADE É UM POWER-UP
-                // Nota: Substitua "getEntity()" pelo getter correto da sua classe Spawner (ex: getName(), getTypeString())
                 if (spawn.getEntity().equals("POWERUP")) {
                     
-                    // Tipo 1 = Escudo | Tipo 2 = Tiro Triplo
                     if (spawn.getType() == 1) {
                         powerUpManager.addPowerUp(new ShieldPowerUp(spawn.getX(), spawn.getY()));
                     } else if (spawn.getType() == 2) {
@@ -105,12 +108,13 @@ public class LevelManager {
                     }
                     
                 } else {
-                    // Se não for Power-Up, manda para o EnemyManager normalmente
                     enemyManager.spawnEntity(spawn);
                 }
                 
                 spawners.remove(0); 
             } else {
+                // Como a lista agora está garantidamente ordenada, 
+                // se o primeiro item não está pronto, nenhum dos outros estará!
                 break;
             }
         }
@@ -121,8 +125,8 @@ public class LevelManager {
             currentLevel++; 
             
             if (currentLevel < numberOfLevels) {
-                enemyManager.resetPhase(); // Limpa os inimigos da fase velha
-                loadLevel(currentLevel, currentTime); // Carrega e reseta o cronômetro
+                enemyManager.resetPhase(); 
+                loadLevel(currentLevel, currentTime); 
             } else {
                 this.victory = true;
             }

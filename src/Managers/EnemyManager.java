@@ -32,13 +32,12 @@ public class EnemyManager {
     }
 
     private void createRegularEnemy(Spawner spawn) {
-        double v = 0.2;
         double angle = (3 * Math.PI) / 2;
         double rv = 0.0;
         
         switch (spawn.getType()) {
-            case 1: enemies.add(new CircleEnemy(spawn.getX(), spawn.getY(), v, angle, rv, 500)); break;
-            case 2: enemies.add(new DiamondEnemy(spawn.getX(), spawn.getY(), v, angle, rv)); break;
+            case 1: enemies.add(new CircleEnemy(spawn.getX(), spawn.getY(), 0.2, angle, rv, 500)); break;
+            case 2: enemies.add(new DiamondEnemy(spawn.getX(), spawn.getY(), 0.42, angle, rv)); break;
         }
     }
 
