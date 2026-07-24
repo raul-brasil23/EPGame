@@ -1,4 +1,4 @@
-10
+5
 2
 level1.txt
 level2.txt

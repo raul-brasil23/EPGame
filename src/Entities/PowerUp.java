@@ -22,7 +22,7 @@ public abstract class PowerUp extends Entity {
         }
     }
 
-    public abstract void applyEffect(Player player);
+    public abstract void applyEffect(Player player, long currentTime);
     
     protected boolean shouldBlink(long currentTime) {
         return ((currentTime / 300) % 2 == 0);

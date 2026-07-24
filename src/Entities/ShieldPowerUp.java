@@ -13,7 +13,7 @@ public class ShieldPowerUp extends PowerUp {
     }
 
     @Override
-    public void applyEffect(Player player) {
+    public void applyEffect(Player player, long currentTime) {
         player.getPowerUpController().activateShield();
     }
 
@@ -22,12 +22,12 @@ public class ShieldPowerUp extends PowerUp {
         if (this.state == State.ACTIVE) {
             if (shouldBlink(currentTime)) {
                 GameLib.setColor(Color.GREEN);
-                GameLib.drawCircle(this.X, this.Y, this.radius);
+                GameLib.drawStar(this.X, this.Y, this.radius);
             } else {
                 // Quando não está piscando claro, desenha um tom mais escuro
                 // para dar aquele efeito de pulsar suave
                 GameLib.setColor(Color.GREEN.darker());
-                GameLib.drawCircle(this.X, this.Y, this.radius);
+                GameLib.drawStar(this.X, this.Y, this.radius);
             }
         }
     }

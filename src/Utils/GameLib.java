@@ -5,6 +5,7 @@ import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.awt.Font; // Importação da Fonte adicionada
 
 import javax.swing.JFrame;
 
@@ -37,6 +38,9 @@ public class GameLib {
 	public static final int KEY_RIGHT = 3;
 	public static final int KEY_CONTROL = 4;
 	public static final int KEY_ESCAPE = 5;
+	// Adicionado
+	public static final int KEY_SPACE = 6;
+	public static final int KEY_ENTER = 7;
 
 	private static MyFrame frame = null;
 	private static Graphics g = null;
@@ -121,6 +125,28 @@ public class GameLib {
 		drawLine(x3, y3, x4, y4);
 		drawLine(x4, y4, x1, y1);
 	}
+
+	// Nova função para desenhar a Estrela
+	public static void drawStar(double x, double y, double radius) {
+		int numPoints = 10;
+		int[] xPoints = new int[numPoints];
+		int[] yPoints = new int[numPoints];
+		
+		double innerRadius = radius / 2.5; 
+		double angleOffset = -Math.PI / 2; 
+		double angleStep = Math.PI / 5;
+		
+		for (int i = 0; i < numPoints; i++) {
+			double r = (i % 2 == 0) ? radius : innerRadius;
+			xPoints[i] = (int) Math.round(x + r * Math.cos(angleOffset + i * angleStep));
+			yPoints[i] = (int) Math.round(y + r * Math.sin(angleOffset + i * angleStep));
+		}
+		
+		for (int i = 0; i < numPoints; i++) {
+			int next = (i + 1) % numPoints;
+			drawLine(xPoints[i], yPoints[i], xPoints[next], yPoints[next]);
+		}
+	}
 	
 	public static void drawPlayer(double player_X, double player_Y, double player_size){
 		
@@ -148,6 +174,16 @@ public class GameLib {
 		int y = (int) Math.round(cy - height/2);
 		
 		g.fillRect(x, y, (int) Math.round(width), (int) Math.round(height));
+	}
+
+	// Nova função para escrever textos na tela de forma centralizada e grossa
+	public static void drawTextCentered(String text, double x, double y, int size) {
+		if (g != null) {
+			Font font = new Font("Arial", Font.BOLD, size);
+			g.setFont(font);
+			int textWidth = g.getFontMetrics(font).stringWidth(text);
+			g.drawString(text, (int) Math.round(x - textWidth / 2.0), (int) Math.round(y));
+		}
 	}
 	
 	public static void display(){
@@ -207,7 +243,10 @@ class MyKeyAdapter extends KeyAdapter{
 					KeyEvent.VK_LEFT,
 					KeyEvent.VK_RIGHT, 
 					KeyEvent.VK_CONTROL,
-					KeyEvent.VK_ESCAPE
+					KeyEvent.VK_ESCAPE,
+					// Adicionado!
+					KeyEvent.VK_SPACE,
+					KeyEvent.VK_ENTER
 				};
 	
 	private boolean [] keyStates = null;

@@ -61,7 +61,7 @@ public class CollisionManager {
                     
                     if (dist < (player.getRadius() + powerUp.getRadius()) * 0.8) {
                         // POLIMORFISMO PURO APLICADO AO POWER-UP!
-                        powerUp.applyEffect(player);
+                        powerUp.applyEffect(player, currentTime);
                         powerUp.setState(State.INACTIVE);
                     }
                 }

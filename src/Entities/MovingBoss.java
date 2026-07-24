@@ -8,7 +8,7 @@ import Utils.GameLib;
 public class MovingBoss extends Boss {
 
     public MovingBoss(State state, double x, double y, int hp) {
-        super(state, x, y, 35.0, new DiagonalBounceMovement(), 300, hp);
+        super(state, x, y, 35.0, new DiagonalBounceMovement(), 300, hp, "DVD Nightmare");
         this.lastShootTime = System.currentTimeMillis();
     }
 
@@ -43,12 +43,15 @@ public class MovingBoss extends Boss {
         } 
         else if (this.state == State.ACTIVE) {
             GameLib.setColor(java.awt.Color.MAGENTA);
-            GameLib.drawCircle(this.getX(), this.getY(), this.getRadius());
+            GameLib.drawDiamond(this.getX(), this.getY(), this.getRadius());
             
             if (currentTime % 200 < 100) {
                 GameLib.setColor(java.awt.Color.WHITE);
-                GameLib.drawCircle(this.getX(), this.getY(), this.getRadius() + 5);
+                GameLib.drawDiamond(this.getX(), this.getY(), this.getRadius() + 5);
             }
         }
+        
+        // Chamada universal da barra do chefe que implementamos na classe base
+        this.drawBossUI();
     }
 }

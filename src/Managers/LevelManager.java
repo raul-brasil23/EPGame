@@ -1,5 +1,6 @@
 package Managers;
 
+import Utils.GameLib;
 import Utils.Spawner;
 import Entities.ShieldPowerUp;
 import Entities.TripleShotPowerUp;
@@ -8,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.awt.Color;
 
 public class LevelManager {
     private int startHP;
@@ -17,6 +19,8 @@ public class LevelManager {
     private int currentLevel;
     private List<Spawner> spawners;
     private long levelStartTime;
+
+    private boolean victory = false;
 
     public LevelManager(String configFile, long currentTime) {
         levelFiles = new ArrayList<>();
@@ -80,7 +84,7 @@ public class LevelManager {
     }
 
     // Atualizado para receber também o PowerUpManager
-    public void update(long currentTime, EnemyManager enemyManager, ProjectileManager projManager, PowerUpManager powerUpManager) {
+    public void update(long currentTime, EnemyManager enemyManager, PowerUpManager powerUpManager) {
         long timeOnLevel = currentTime - levelStartTime;
         
         // Spawn de entidades baseado no tempo cronológico
@@ -117,15 +121,26 @@ public class LevelManager {
             currentLevel++; 
             
             if (currentLevel < numberOfLevels) {
-                System.out.println("-> Iniciando fase " + (currentLevel + 1));
                 enemyManager.resetPhase(); // Limpa os inimigos da fase velha
                 loadLevel(currentLevel, currentTime); // Carrega e reseta o cronômetro
             } else {
-                System.out.println("-> JOGO FINALIZADO! Você venceu todas as fases!");
-                System.exit(0); 
+                this.victory = true;
             }
         }
     }
 
+    public boolean isVictory() { return victory; }
     public int getStartHP() { return startHP; }
+
+    // Efeito de Fade Out por 3 segundos
+    public void drawLevelText(long currentTime) {
+        long elapsed = currentTime - levelStartTime;
+        if (elapsed < 3000) { 
+            double alpha = 1.0 - (elapsed / 3000.0);
+            if (alpha < 0) alpha = 0;
+            int a = (int) (alpha * 255);
+            GameLib.setColor(new Color(255, 255, 0, a)); 
+            GameLib.drawTextCentered("LEVEL " + (currentLevel + 1), GameLib.WIDTH / 2.0, GameLib.HEIGHT / 2.0, 36);
+        }
+    }
 }

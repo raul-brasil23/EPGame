@@ -12,19 +12,19 @@ public class TripleShotPowerUp extends PowerUp {
     }
 
     @Override
-    public void applyEffect(Player player) {
-        player.getPowerUpController().activateTripleShot();
+    public void applyEffect(Player player, long currentTime) {
+        player.getPowerUpController().activateTripleShot(currentTime);
     }
 
     @Override
     public void draw(long currentTime) {
         if (this.state == State.ACTIVE) {
             if (shouldBlink(currentTime)) {
-                GameLib.setColor(Color.ORANGE);
-                GameLib.drawCircle(this.X, this.Y, this.radius);
+                GameLib.setColor(Color.MAGENTA);
+                GameLib.drawStar(this.X, this.Y, this.radius);
             } else {
-                GameLib.setColor(Color.ORANGE.darker());
-                GameLib.drawCircle(this.X, this.Y, this.radius);
+                GameLib.setColor(Color.MAGENTA.darker());
+                GameLib.drawStar(this.X, this.Y, this.radius);
             }
         }
     }

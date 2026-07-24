@@ -1,12 +1,7 @@
-import Entities.Player;
 import Managers.BackgroundManager;
-import Managers.CollisionManager;
-import Managers.EnemyManager;
-import Managers.LevelManager;
-import Managers.PowerUpManager;
-import Managers.ProjectileManager;
+import Managers.ScreenManager;
+import Screens.StartScreen;
 import Utils.GameLib;
-import Utils.State;
 
 public class Main {
 	
@@ -20,55 +15,32 @@ public class Main {
 		long delta;
 		long currentTime = System.currentTimeMillis();
 
+		// Apenas os Managers Globais ficam aqui!
 		BackgroundManager backgroundManager = new BackgroundManager();
-		EnemyManager enemyManager = new EnemyManager();
-		ProjectileManager projectileManager = new ProjectileManager();
-		CollisionManager collisionManager = new CollisionManager();
-		PowerUpManager powerUpManager = new PowerUpManager();
-		LevelManager levelManager = new LevelManager("Levels/level_config.txt", currentTime);
-		Player player = new Player(GameLib.WIDTH / 2, GameLib.HEIGHT * 0.90, currentTime, levelManager.getStartHP());
+		ScreenManager screenManager = new ScreenManager();
 						
 		GameLib.initGraphics();
 		
-		while(running){
+		// Injeta a tela inicial no gerenciador
+		screenManager.setScreen(new StartScreen(screenManager));
 		
+		while(running){
 			delta = System.currentTimeMillis() - currentTime;
 			currentTime = System.currentTimeMillis();
 			
-			// 1. Verificando entrada do usuário 
-			// A Movimentação agora está sendo chamada implicitamente dentro de player.update(), 
-            // mas como a base já separa teclado, você pode manter essa arquitetura focada no OOP
-			player.update(currentTime, delta); 
-			player.tryToShoot(currentTime, player, projectileManager); // Parâmetro injetado pro Player também!
-			
+			// A checagem do ESC fica global para sair do jogo de qualquer tela
 			if(GameLib.iskeyPressed(GameLib.KEY_ESCAPE)) {
-				System.out.println("Já tá desistindo? :(");
 				running = false;
 			}
 			
-			// 2. Atualizações de estados e Colisões 
+			// O fundo rola independentemente de estar na tela inicial, morrendo ou jogando
 			backgroundManager.update(delta);
+			screenManager.update(currentTime, delta);
 
-			if (player.getState() == State.INACTIVE) {
-				System.out.println("GAME OVER! A nave foi destruída.");
-				running = false;
-			}
-
-			levelManager.update(currentTime, enemyManager, projectileManager, powerUpManager);
-			enemyManager.update(currentTime, delta, player, projectileManager);
-			projectileManager.update(currentTime, delta);
-			powerUpManager.update(currentTime, delta);
-			collisionManager.checkCollisions(player, enemyManager, projectileManager, powerUpManager, currentTime);
-
-			// 3. Desenho da cena 
 			backgroundManager.draw();
-			player.draw(currentTime);
-			enemyManager.draw(currentTime);
-			projectileManager.draw(currentTime);
-			powerUpManager.draw(currentTime);
+			screenManager.draw(currentTime);
 			
 			GameLib.display();
-			
 			busyWait(currentTime + 3);
 		}
 		

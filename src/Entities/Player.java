@@ -25,6 +25,8 @@ public class Player extends Ship {
         if (this.X >= GameLib.WIDTH) this.X = GameLib.WIDTH - 1;
         if (this.Y < 25.0) this.Y = 25.0;
         if (this.Y >= GameLib.HEIGHT) this.Y = GameLib.HEIGHT - 1;
+
+        this.powerUpController.update(currentTime);
     }
 
     @Override
@@ -73,9 +75,12 @@ public class Player extends Ship {
                 GameLib.drawPlayer(this.X - 20, this.Y + 10, (this.radius / 2) + 2);
                 GameLib.drawPlayer(this.X + 20, this.Y + 10, (this.radius / 2) + 2);
                 
-                GameLib.setColor(Color.ORANGE); 
+                GameLib.setColor(Color.MAGENTA); 
                 GameLib.drawPlayer(this.X - 20, this.Y + 10, this.radius / 2);
+                GameLib.drawPlayer(this.X - 20, this.Y + 10, (this.radius / 2) - 1);
+
                 GameLib.drawPlayer(this.X + 20, this.Y + 10, this.radius / 2);
+                GameLib.drawPlayer(this.X + 20, this.Y + 10, (this.radius / 2) - 1);
             }
 
             boolean isBlinking = (currentTime < this.invulnerableUntil) && ((currentTime / 100) % 2 == 0);
@@ -86,9 +91,46 @@ public class Player extends Ship {
                 GameLib.drawPlayer(this.X, this.Y, this.radius + 2);
                 GameLib.setColor(Color.BLUE);
                 GameLib.drawPlayer(this.X, this.Y, this.radius);
+                GameLib.drawPlayer(this.X, this.Y, this.radius - 1); // Camada interna 1
+                GameLib.drawPlayer(this.X, this.Y, this.radius - 2); // Camada interna 2
             }
 
             this.powerUpController.drawShield(this.X, this.Y, this.radius);
+            this.powerUpController.drawTripleShotBar(this.X, this.Y, this.radius, currentTime);
+        }
+
+        // --- SISTEMA DE UI DAS VIDAS ---
+        if (this.hp > 0) {
+            int maxLivesToShow = Math.min(this.hp, 10);
+            double lifeX = GameLib.WIDTH - 25;
+            double lifeYBase = GameLib.HEIGHT - 25;
+            double lifeSize = this.radius * 0.6; // Naves de vida são menores
+
+            for (int i = 0; i < maxLivesToShow; i++) {
+                double ly = lifeYBase - (i * 25);
+                GameLib.setColor(Color.BLUE);
+                GameLib.drawPlayer(lifeX, ly, lifeSize);
+                GameLib.drawPlayer(lifeX, ly, lifeSize - 1);
+                GameLib.drawPlayer(lifeX, ly, lifeSize - 2);
+            }
+
+            // Exibe um '+' caso tenha mais de 10 vidas
+            if (this.hp > 10) {
+                GameLib.setColor(Color.WHITE);
+                GameLib.drawTextCentered("+", lifeX, lifeYBase - (10 * 25) + 10, 20);
+            }
+
+            // --- SISTEMA DE UI DO ESCUDO (Tracejado Vertical) ---
+            int shieldHp = this.powerUpController.getShieldHp();
+            if (shieldHp > 0) {
+                double shieldX = lifeX - 25; 
+                GameLib.setColor(Color.GREEN); 
+                for (int i = 0; i < shieldHp; i++) {
+                    double sy = lifeYBase - (i * 25);
+                    // Retângulo vertical (grosso e na mesma altura da nave)
+                    GameLib.fillRect(shieldX, sy, 8, lifeSize * 2); 
+                }
+            }
         }
     }
 

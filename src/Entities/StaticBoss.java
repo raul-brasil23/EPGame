@@ -8,7 +8,7 @@ import Utils.GameLib;
 public class StaticBoss extends Boss {
 
     public StaticBoss(State state, double x, double y, int hp) {
-        super(state, x, y, 40.0, new OscillatingMovement(), 200, hp); 
+        super(state, x, y, 40.0, new OscillatingMovement(), 200, hp, "Massive Shooter"); 
         this.lastShootTime = System.currentTimeMillis();
     }
 
@@ -50,5 +50,8 @@ public class StaticBoss extends Boss {
             GameLib.setColor(java.awt.Color.YELLOW);
             GameLib.drawCircle(this.getX(), this.getY(), (this.getRadius() / 2) + pulse);
         }
+        
+        // Chamada universal da barra do chefe que implementamos na classe base
+        this.drawBossUI();
     }
 }
