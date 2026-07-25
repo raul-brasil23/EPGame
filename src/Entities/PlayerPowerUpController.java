@@ -1,56 +1,60 @@
 package Entities;
+
 import Utils.GameLib;
 import java.awt.Color;
 
 public class PlayerPowerUpController {
-    private boolean hasTripleShot = false;
-    private long tripleShotEndTime = 0; // Temporizador
-
-    private boolean hasShield = false;
-    private int shieldHp = 0;
+    
+    private boolean hasTripleShot;
+    private long tripleShotEndTime;
+    private boolean hasShield;
+    private int shieldHp;
     private final int SHIELD_MAX_HP = 3;
 
-    public void activateShield() {
-        this.hasShield = true;
-        this.shieldHp = SHIELD_MAX_HP;
-    }
-    public void activateTripleShot(long currentTime) { 
-        this.hasTripleShot = true; 
-        this.tripleShotEndTime = currentTime + 10000; // Dura 10 segundos!
+    public PlayerPowerUpController() {
+        this.hasTripleShot = false;
+        this.tripleShotEndTime = 0;
+        this.hasShield = false;
+        this.shieldHp = 0;
     }
 
-    // Método que será chamado a cada frame para desligar o poder se o tempo acabar
+    // Cuida do desligamento do triple shot caso o tempo de duração tenha se esgotado
     public void update(long currentTime) {
         if (this.hasTripleShot && currentTime > this.tripleShotEndTime) {
             this.hasTripleShot = false;
         }
     }
 
-    public boolean hasTripleShot() { return hasTripleShot; }
-    public boolean hasShield() { return hasShield; }
-    public int getShieldHp() { return shieldHp; } // Getter criado para o Player poder desenhar as barrinhas
-
-    // Preparando o terreno para a sua barra visual futura
-    public long getTripleShotEndTime() { return tripleShotEndTime; }
+    public void activateShield() {
+        this.hasShield = true;
+        this.shieldHp = SHIELD_MAX_HP;
+    }
     
-    // Desenha a barra decrescente do tiro triplo acompanhando a nave
+    // O timer é resetado caso o player pegue outro item, ao invés de somar
+    public void activateTripleShot(long currentTime) { 
+        this.hasTripleShot = true; 
+        this.tripleShotEndTime = currentTime + 10000; 
+    }
+
+    // Desenha barra de duração do tempo do powerup triple shoot
     public void drawTripleShotBar(double playerX, double playerY, double playerRadius, long currentTime) {
-        if (hasTripleShot && currentTime <= tripleShotEndTime) {
-            double remaining = (tripleShotEndTime - currentTime) / 10000.0;
-            if (remaining < 0) remaining = 0;
+        if (this.hasTripleShot && currentTime <= this.tripleShotEndTime) {
+            double remaining = (this.tripleShotEndTime - currentTime) / 10000.0;
+            
+            if (remaining < 0) {
+                remaining = 0;
+            }
             
             double barWidth = 40.0;
             double barHeight = 5.0;
             double currentWidth = barWidth * remaining;
             double drawY = playerY + playerRadius + 15;
             
-            // Contorno e fundo vazio
             GameLib.setColor(Color.MAGENTA);
             GameLib.fillRect(playerX, drawY, barWidth + 2, barHeight + 2);
             GameLib.setColor(Color.BLACK);
             GameLib.fillRect(playerX, drawY, barWidth, barHeight);
             
-            // Preenchimento decaindo (ancorado na esquerda usando o cx)
             double cx = playerX - (barWidth / 2.0) + (currentWidth / 2.0);
             GameLib.setColor(Color.MAGENTA);
             GameLib.fillRect(cx, drawY, currentWidth, barHeight);
@@ -58,18 +62,24 @@ public class PlayerPowerUpController {
     }
 
     public boolean takeShieldDamage() {
-        if (hasShield) {
-            shieldHp--;
-            if (shieldHp <= 0) hasShield = false;
-            return true; // Dano foi absorvido
+        if (this.hasShield) {
+            this.shieldHp -= 1;
+            
+            if (this.shieldHp <= 0) {
+                this.hasShield = false;
+            }
+            
+            return true; 
         }
-        return false; // Não tem escudo, player toma dano
+        
+        return false; 
     }
 
     public void drawShield(double x, double y, double radius) {
-        if (hasShield) {
+        if (this.hasShield) {
             GameLib.setColor(Color.GREEN);
             double shieldRadius = radius + 15;
+            
             for (int i = 0; i < 360; i += 20) {
                 double angle1 = Math.toRadians(i);
                 double angle2 = Math.toRadians(i + 20);
@@ -83,4 +93,9 @@ public class PlayerPowerUpController {
             }
         }
     }
+
+    public boolean hasTripleShot() { return hasTripleShot; }
+    public boolean hasShield() { return hasShield; }
+    public int getShieldHp() { return shieldHp; } 
+    public long getTripleShotEndTime() { return tripleShotEndTime; }
 }

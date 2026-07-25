@@ -2,25 +2,20 @@ package Entities;
 
 import Utils.State;
 import Utils.GameLib;
-
 import java.awt.Color;
 
 public class PlayerProjectile extends Projectile {
 	
 	public PlayerProjectile (double x, double y) {
-		super (State.ACTIVE, x, y, 0.0, -1.0, 0.0);
+		super(State.ACTIVE, x, y, 0.0, -1.0, 0.0);
 	}
 	
 	@Override
 	public void update(long currentTime, long delta) {
-		// Chama o movimento matemático que agora está na superclasse
 		super.update(currentTime, delta);
 		
-		if (this.state == State.ACTIVE) {
-			// Verifica apenas se o projétil saiu da tela (passou do topo)
-			if (this.Y < 0) {
-				this.state = State.INACTIVE;
-			}
+		if (this.state == State.ACTIVE && this.Y < 0) {
+			this.state = State.INACTIVE;
 		}
 	}
 

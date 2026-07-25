@@ -4,6 +4,7 @@ import Behaviors.OscillatingMovement;
 import Managers.ProjectileManager;
 import Utils.State;
 import Utils.GameLib;
+import java.awt.Color;
 
 public class StaticBoss extends Boss {
 
@@ -17,13 +18,17 @@ public class StaticBoss extends Boss {
 
     @Override
     public void tryToShoot(long currentTime, Player player, ProjectileManager projManager) {
-        if (this.state == State.ACTIVE && (currentTime - lastShootTime >= shootInterval)) {
+        if (this.state == State.ACTIVE && (currentTime - this.lastShootTime >= this.shootInterval)) {
             double speed = 0.40; 
             double startX = this.getX();
             double startY = this.getY() + this.getRadius(); 
             
             double[] angles = { 
-                Math.PI/2 - Math.PI/6, Math.PI/2 - Math.PI/12, Math.PI/2, Math.PI/2 + Math.PI/12, Math.PI/2 + Math.PI/6   
+                Math.PI/2 - Math.PI/6, 
+                Math.PI/2 - Math.PI/12, 
+                Math.PI/2, 
+                Math.PI/2 + Math.PI/12, 
+                Math.PI/2 + Math.PI/6   
             };
 
             for (double angle : angles) {
@@ -31,27 +36,28 @@ public class StaticBoss extends Boss {
                 double projectileVy = Math.sin(angle) * speed;
                 projManager.getEnemyProjectiles().add(new EnemyProjectile(startX, startY, projectileVx, projectileVy));
             }
-            lastShootTime = currentTime;
+            
+            this.lastShootTime = currentTime;
         }
     }
 
     @Override
     public void draw(long currentTime) {
         if (this.state == State.EXPLODING) {
-            double alpha = (double) (currentTime - (deadTime > 0 ? deadTime : this.explosion_start)) / 500.0;
-            if (alpha > 1.0) alpha = 1.0; 
+            double alpha = (double) (currentTime - (this.deadTime > 0 ? this.deadTime : this.explosion_start)) / 500.0;
+            if (alpha > 1.0) {
+                alpha = 1.0; 
+            }
             GameLib.drawExplosion(this.getX(), this.getY(), alpha);
-        } 
-        else if (this.state == State.ACTIVE) {
-            GameLib.setColor(java.awt.Color.RED);
+        } else if (this.state == State.ACTIVE) {
+            GameLib.setColor(Color.RED);
             GameLib.drawCircle(this.getX(), this.getY(), this.getRadius());
         
             double pulse = Math.sin(currentTime * 0.005) * 10; 
-            GameLib.setColor(java.awt.Color.YELLOW);
+            GameLib.setColor(Color.YELLOW);
             GameLib.drawCircle(this.getX(), this.getY(), (this.getRadius() / 2) + pulse);
         }
         
-        // Chamada universal da barra do chefe que implementamos na classe base
         this.drawBossUI();
     }
 }

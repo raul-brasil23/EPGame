@@ -4,9 +4,11 @@ import Entities.Entity;
 import Utils.GameLib;
 
 public class DiagonalBounceMovement implements MovementBehavior {
+    
     private double vx = 0.20;
     private double vy = 0.20;
 
+    // Mantém o inimigo quicando nas bordas da tela invertendo a velocidade
     @Override
     public void move(Entity entity, long delta) {
         entity.setX(entity.getX() + (this.vx * delta));

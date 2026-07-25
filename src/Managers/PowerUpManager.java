@@ -14,35 +14,29 @@ public class PowerUpManager {
         this.powerUps = new ArrayList<>();
     }
 
-    // Adiciona um novo power-up na tela (será chamado pelo Spawner)
     public void addPowerUp(PowerUp powerUp) {
         this.powerUps.add(powerUp);
     }
 
-    // Atualiza a posição de todos os power-ups
+    // Usa um Iterator para atualizar e remover da lista os itens coletados ou que saíram da tela
     public void update(long currentTime, long delta) {
-        Iterator<PowerUp> iterator = powerUps.iterator();
+        Iterator<PowerUp> iterator = this.powerUps.iterator();
         
         while (iterator.hasNext()) {
             PowerUp powerUp = iterator.next();
             powerUp.update(currentTime, delta);
             
-            // Se o power-up ficou inativo (foi pego pelo player ou saiu da tela), remove da lista
             if (powerUp.getState() == State.INACTIVE) {
                 iterator.remove();
             }
         }
     }
 
-    // Desenha todos os power-ups ativos
     public void draw(long currentTime) {
-        for (PowerUp powerUp : powerUps) {
+        for (PowerUp powerUp : this.powerUps) {
             powerUp.draw(currentTime);
         }
     }
 
-    // Retorna a lista para o CollisionManager poder verificar as colisões
-    public List<PowerUp> getPowerUps() {
-        return this.powerUps;
-    }
+    public List<PowerUp> getPowerUps() { return powerUps; }
 }

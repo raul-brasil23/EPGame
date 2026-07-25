@@ -1,13 +1,15 @@
 package Utils;
     
 public class Spawner {
-    private String entity; // Inimigo, Chefe ou Power-Up?
-    private int type; // Qual tipo?
-    private int hp; // Quantos pontos de vida tem o chefe?
-    private long when; // Em que momento ele deve aparecer?
-    private double x; // posicao x inicial
-    private double y; // posicao y inicial
+    
+    private String entity;
+    private int type;
+    private int hp;
+    private long when;
+    private double x;
+    private double y;
 
+    // Construtor para bosses
     public Spawner (String entity, int type, int hp, long when, double x, double y) {
         this.entity = entity;
         this.type = type;
@@ -17,6 +19,7 @@ public class Spawner {
         this.y = y;
     }
 
+    // Construtor alternativo para inimigos e power-ups que não possuem hp
     public Spawner (String entity, int type, long when, double x, double y) {
         this.entity = entity;
         this.type = type;
@@ -31,5 +34,5 @@ public class Spawner {
     public int getHp() { return hp; }
     public long getSpawnTime() { return when; }
     public double getX() { return x; }
-    public double getY() { return y; } // Pode chamar de getY()
+    public double getY() { return y; }
 }

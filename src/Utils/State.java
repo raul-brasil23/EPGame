@@ -1,6 +1,7 @@
 package Utils;
 
 public enum State {
+	
 	INACTIVE(0),
 	ACTIVE(1),
 	EXPLODING(2);
@@ -11,8 +12,5 @@ public enum State {
 		this.state = state;
 	}
 	
-	public int getState () {
-		return state;
-	}
-	
+	public int getState () { return state; }
 }

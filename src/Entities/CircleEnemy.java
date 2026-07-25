@@ -9,7 +9,7 @@ import java.awt.Color;
 public class CircleEnemy extends Enemy {
 	
 	public CircleEnemy (double x, double y, double v, double angle, double rv, long shootInterval) {
-		super (State.ACTIVE, x, y, 9.0, new CircularMovement(v, angle, rv), shootInterval);
+		super(State.ACTIVE, x, y, 9.0, new CircularMovement(v, angle, rv), shootInterval);
 	}
 
 	@Override

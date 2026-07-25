@@ -4,6 +4,7 @@ import Behaviors.DiagonalBounceMovement;
 import Managers.ProjectileManager;
 import Utils.State;
 import Utils.GameLib;
+import java.awt.Color;
 
 public class MovingBoss extends Boss {
 
@@ -15,9 +16,10 @@ public class MovingBoss extends Boss {
     @Override
     protected void performExtraActions(long currentTime, long delta) {}
 
+    // Aplica um seno ao longo do tempo para o tiro fazer um movimento lateral, se espalhando pela tela
     @Override
     public void tryToShoot(long currentTime, Player player, ProjectileManager projManager) {
-        if (this.state == State.ACTIVE && currentTime - lastShootTime >= shootInterval) {
+        if (this.state == State.ACTIVE && currentTime - this.lastShootTime >= this.shootInterval) {
             double speed = 0.50; 
             double startX = this.getX();
             double startY = this.getY() + this.getRadius(); 
@@ -30,28 +32,29 @@ public class MovingBoss extends Boss {
                 double projectileVy = Math.sin(angle) * speed;
                 projManager.getEnemyProjectiles().add(new EnemyProjectile(startX, startY, projectileVx, projectileVy));
             }
-            lastShootTime = currentTime;
+            
+            this.lastShootTime = currentTime;
         }
     }
 
     @Override
     public void draw(long currentTime) {
         if (this.state == State.EXPLODING) {
-            double alpha = (double) (currentTime - (deadTime > 0 ? deadTime : this.explosion_start)) / 500.0;
-            if (alpha > 1.0) alpha = 1.0; 
+            double alpha = (double) (currentTime - (this.deadTime > 0 ? this.deadTime : this.explosion_start)) / 500.0;
+            if (alpha > 1.0) {
+                alpha = 1.0; 
+            }
             GameLib.drawExplosion(this.getX(), this.getY(), alpha);
-        } 
-        else if (this.state == State.ACTIVE) {
-            GameLib.setColor(java.awt.Color.MAGENTA);
+        } else if (this.state == State.ACTIVE) {
+            GameLib.setColor(Color.MAGENTA);
             GameLib.drawDiamond(this.getX(), this.getY(), this.getRadius());
             
             if (currentTime % 200 < 100) {
-                GameLib.setColor(java.awt.Color.WHITE);
+                GameLib.setColor(Color.WHITE);
                 GameLib.drawDiamond(this.getX(), this.getY(), this.getRadius() + 5);
             }
         }
         
-        // Chamada universal da barra do chefe que implementamos na classe base
         this.drawBossUI();
     }
 }

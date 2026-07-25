@@ -4,6 +4,7 @@ import Utils.GameLib;
 import java.awt.Color;
 
 public class Background {
+	
 	private double X;
 	private double Y;
 	private double speed;
@@ -18,10 +19,10 @@ public class Background {
 		this.size = size;
 	}
 	
+    // Move o fundo e cria a ilusão de um loop infinito
 	public void update(long delta) {
 		this.Y += this.speed * delta;
 		
-		// Volta pro topo da tela formando um loop infinito
 		if (this.Y > GameLib.HEIGHT) {
 			this.Y %= GameLib.HEIGHT; 
 		}

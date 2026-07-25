@@ -2,7 +2,9 @@ package Entities;
 
 import Utils.State;
 
+// Classe raiz para todos os objetos do jogo
 public abstract class Entity {
+	
 	protected State state;
 	protected double X;
 	protected double Y;
@@ -22,10 +24,10 @@ public abstract class Entity {
 	public void setState(State state) { this.state = state; }
 
 	public double getX() { return X; }
-	public void setX(double x) { X = x; }
+	public void setX(double x) { this.X = x; }
 
 	public double getY() { return Y; }
-	public void setY(double y) { Y = y; }
+	public void setY(double y) { this.Y = y; }
 
 	public double getRadius() { return radius; }
 	public void setRadius(double radius) { this.radius = radius; }

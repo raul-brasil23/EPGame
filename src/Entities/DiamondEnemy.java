@@ -9,7 +9,7 @@ import java.awt.Color;
 public class DiamondEnemy extends Enemy {
 	
 	public DiamondEnemy (double x, double y, double v, double angle, double rv) {
-		super (State.ACTIVE, x, y, 12.0, new DiamondMovement(v, angle, rv), 0);
+		super(State.ACTIVE, x, y, 12.0, new DiamondMovement(v, angle, rv), 0);
 	}
 
 	@Override
@@ -19,18 +19,21 @@ public class DiamondEnemy extends Enemy {
 		}
 	}
 
+    // Atira usando 3 ângulos base
 	@Override
 	public void tryToShoot(long currentTime, Player player, ProjectileManager projManager) {
 		DiamondMovement move = (DiamondMovement) this.movementBehavior;
 		
 		if (move.isReadyToShoot()) {
 			double[] angles = { Math.PI/2 + Math.PI/8, Math.PI/2, Math.PI/2 - Math.PI/8 };
+			
 			for (double angle : angles) {
 				double a = angle + Math.random() * Math.PI/6 - Math.PI/12;
 				double vx = Math.cos(a) * 0.30;
 				double vy = Math.sin(a) * 0.30;
 				projManager.getEnemyProjectiles().add(new EnemyProjectile(this.getX(), this.getY(), vx, vy));
 			}
+			
 			move.resetShot(); 
 		}
 	}

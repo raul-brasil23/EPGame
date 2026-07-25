@@ -6,58 +6,77 @@ import Entities.ShieldPowerUp;
 import Entities.TripleShotPowerUp;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.awt.Color;
 
 public class LevelManager {
+    
     private int startHP;
     private int numberOfLevels;
     private List<String> levelFiles;
-
     private int currentLevel;
     private List<Spawner> spawners;
     private long levelStartTime;
-
-    private boolean victory = false;
+    private boolean victory;
 
     public LevelManager(String configFile, long currentTime) {
-        levelFiles = new ArrayList<>();
-        spawners = new ArrayList<>();
-        currentLevel = 0; 
+        this.levelFiles = new ArrayList<>();
+        this.spawners = new ArrayList<>();
+        this.currentLevel = 0; 
+        this.victory = false;
         
         readConfigFile(configFile);
-        loadLevel(currentLevel, currentTime);
+        loadLevel(this.currentLevel, currentTime);
+    }
+
+    // O código pode ser executado na raiz do projeto ou dentro dos diretórios "src" ou "bin"
+    private File filePath(String relativePath) {
+        Path path = Path.of(relativePath);
+        
+        // Se o arquivo não existir no diretório atual, volta uma pasta (../)
+        if (!Files.exists(path)) {
+            path = Path.of("../", relativePath);
+        }
+        
+        return path.toFile();
     }
 
     private void readConfigFile(String path) {
         try {
-            Scanner scanner = new Scanner(new File(path));
+            File file = filePath(path);
+            Scanner scanner = new Scanner(file);
             
             this.startHP = scanner.nextInt(); 
             this.numberOfLevels = scanner.nextInt();      
             scanner.nextLine(); 
             
-            for (int i = 0; i < numberOfLevels; i++) {
-                levelFiles.add(scanner.nextLine().trim());
+            for (int i = 0; i < this.numberOfLevels; i++) {
+                this.levelFiles.add(scanner.nextLine().trim());
             }
-            scanner.close();
             
+            scanner.close();
         } catch (FileNotFoundException e) {
             System.out.println("Erro: Arquivo de configuração não encontrado: " + path);
             System.exit(1);
         }
     }
 
+    // Carrega a fase escolhida ao traduzir o arquivo .txt em entidades, levando em consideração o tempo de spawn de cada entidade
     private void loadLevel(int levelNumber, long currentTime) {
-        spawners.clear(); 
+        this.spawners.clear(); 
         this.levelStartTime = currentTime; 
 
-        String levelPath = "Levels/" + levelFiles.get(levelNumber);
+        String levelPath = "Levels/" + this.levelFiles.get(levelNumber);
 
-        try (Scanner scanner = new Scanner(new File(levelPath))) { 
+        try { 
+            File file = filePath(levelPath);
+            Scanner scanner = new Scanner(file);
             
+
             while (scanner.hasNext()) {
                 String entity = scanner.next(); 
                 
@@ -67,21 +86,22 @@ public class LevelManager {
                     long when = scanner.nextLong();
                     double x = scanner.nextDouble();
                     double y = scanner.nextDouble();
-                    spawners.add(new Spawner(entity, type, hp, when, x, y));
-                } 
-                else { 
+                    
+                    this.spawners.add(new Spawner(entity, type, hp, when, x, y));
+                } else { 
                     int type = scanner.nextInt();
                     long when = scanner.nextLong();
                     double x = scanner.nextDouble();
                     double y = scanner.nextDouble();
-                    spawners.add(new Spawner(entity, type, when, x, y));
+                    
+                    this.spawners.add(new Spawner(entity, type, when, x, y));
                 }
             }
             
-            // --- A MÁGICA ACONTECE AQUI ---
-            // Ordena a lista de spawners baseada no tempo (when) em ordem crescente.
-            // Isso garante que o item da posição [0] seja sempre o próximo a aparecer!
-            spawners.sort((s1, s2) -> Long.compare(s1.getSpawnTime(), s2.getSpawnTime()));
+            scanner.close();
+
+            // Ordena os surgimentos do mais cedo ao mais tarde 
+            this.spawners.sort((s1, s2) -> Long.compare(s1.getSpawnTime(), s2.getSpawnTime()));
             
         } catch (FileNotFoundException e) {
             System.out.println("Erro: Arquivo da fase não encontrado: " + levelPath);
@@ -89,62 +109,59 @@ public class LevelManager {
         }
     }
 
-    // A assinatura permanece limpa, recebendo apenas os managers necessários
     public void update(long currentTime, EnemyManager enemyManager, PowerUpManager powerUpManager) {
-        long timeOnLevel = currentTime - levelStartTime;
+        long timeOnLevel = currentTime - this.levelStartTime;
         
-        // Spawn de entidades baseado no tempo cronológico
-        while (!spawners.isEmpty()) {
-            Spawner spawn = spawners.get(0);
+        while (!this.spawners.isEmpty()) {
+            Spawner spawn = this.spawners.get(0);
             
             if (timeOnLevel >= spawn.getSpawnTime()) {
                 
                 if (spawn.getEntity().equals("POWERUP")) {
-                    
                     if (spawn.getType() == 1) {
                         powerUpManager.addPowerUp(new ShieldPowerUp(spawn.getX(), spawn.getY()));
                     } else if (spawn.getType() == 2) {
                         powerUpManager.addPowerUp(new TripleShotPowerUp(spawn.getX(), spawn.getY()));
                     }
-                    
                 } else {
                     enemyManager.spawnEntity(spawn);
                 }
                 
-                spawners.remove(0); 
+                this.spawners.remove(0); 
             } else {
-                // Como a lista agora está garantidamente ordenada, 
-                // se o primeiro item não está pronto, nenhum dos outros estará!
                 break;
             }
         }
 
-        // A fase só é finalizada quando o chefe morre
+        // Avança de fase ou dá game vencido após morte do chefe da fase atual
         if (enemyManager.isBossDefeated()) {
+            this.currentLevel++; 
             
-            currentLevel++; 
-            
-            if (currentLevel < numberOfLevels) {
+            if (this.currentLevel < this.numberOfLevels) {
                 enemyManager.resetPhase(); 
-                loadLevel(currentLevel, currentTime); 
+                loadLevel(this.currentLevel, currentTime); 
             } else {
                 this.victory = true;
             }
         }
     }
 
-    public boolean isVictory() { return victory; }
-    public int getStartHP() { return startHP; }
-
-    // Efeito de Fade Out por 3 segundos
+    // Mostra o nome da fase na tela desaparecendo aos poucos (fading) durante os 3 primeiros segundos
     public void drawLevelText(long currentTime) {
-        long elapsed = currentTime - levelStartTime;
+        long elapsed = currentTime - this.levelStartTime;
+        
         if (elapsed < 3000) { 
             double alpha = 1.0 - (elapsed / 3000.0);
-            if (alpha < 0) alpha = 0;
+            if (alpha < 0) {
+                alpha = 0;
+            }
+            
             int a = (int) (alpha * 255);
             GameLib.setColor(new Color(255, 255, 0, a)); 
-            GameLib.drawTextCentered("LEVEL " + (currentLevel + 1), GameLib.WIDTH / 2.0, GameLib.HEIGHT / 2.0, 36);
+            GameLib.drawTextCentered("LEVEL " + (this.currentLevel + 1), GameLib.WIDTH / 2.0, GameLib.HEIGHT / 2.0, 36);
         }
     }
+
+    public boolean isVictory() { return victory; }
+    public int getStartHP() { return startHP; }
 }

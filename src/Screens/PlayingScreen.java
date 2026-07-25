@@ -11,6 +11,7 @@ import Utils.GameLib;
 import Utils.State;
 
 public class PlayingScreen implements Screen {
+    
     private ScreenManager screenManager;
     private EnemyManager enemyManager;
     private ProjectileManager projectileManager;
@@ -22,42 +23,41 @@ public class PlayingScreen implements Screen {
     public PlayingScreen(ScreenManager screenManager, long currentTime) {
         this.screenManager = screenManager;
         this.levelManager = new LevelManager("Levels/level_config.txt", currentTime);
-        this.player = new Player(GameLib.WIDTH / 2, GameLib.HEIGHT * 0.90, currentTime, levelManager.getStartHP());
+        this.player = new Player(GameLib.WIDTH / 2, GameLib.HEIGHT * 0.90, currentTime, this.levelManager.getStartHP());
         this.enemyManager = new EnemyManager();
         this.projectileManager = new ProjectileManager();
         this.collisionManager = new CollisionManager();
         this.powerUpManager = new PowerUpManager();
     }
 
+    // Organiza a ordem com a qual todos os elementos são atualizados em cada frame do jogo
     @Override
     public void update(long currentTime, long delta) {
-        // A movimentação agora roda automaticamente dentro do player.update()!
-        player.tryToShoot(currentTime, player, projectileManager);
-        player.update(currentTime, delta);
+        this.player.tryToShoot(currentTime, this.player, this.projectileManager);
+        this.player.update(currentTime, delta);
 
-        if (player.getState() == State.INACTIVE) {
-            screenManager.setScreen(new GameOverScreen(screenManager));
-            return; // Sai do método para não continuar atualizando a lógica morta
+        if (this.player.getState() == State.INACTIVE) {
+            this.screenManager.setScreen(new GameOverScreen(this.screenManager));
+            return; 
         }
 
-        // Assinatura limpa: o LevelManager não precisa saber sobre os projéteis
-        levelManager.update(currentTime, enemyManager, powerUpManager);
-        enemyManager.update(currentTime, delta, player, projectileManager);
-        projectileManager.update(currentTime, delta);
-        powerUpManager.update(currentTime, delta);
-        collisionManager.checkCollisions(player, enemyManager, projectileManager, powerUpManager, currentTime);
+        this.levelManager.update(currentTime, this.enemyManager, this.powerUpManager);
+        this.enemyManager.update(currentTime, delta, this.player, this.projectileManager);
+        this.projectileManager.update(currentTime, delta);
+        this.powerUpManager.update(currentTime, delta);
+        this.collisionManager.checkCollisions(this.player, this.enemyManager, this.projectileManager, this.powerUpManager, currentTime);
 
-        if (levelManager.isVictory()) {
-            screenManager.setScreen(new VictoryScreen(screenManager));
+        if (this.levelManager.isVictory()) {
+            this.screenManager.setScreen(new VictoryScreen(this.screenManager));
         }
     }
 
     @Override
     public void draw(long currentTime) {
-        player.draw(currentTime);
-        enemyManager.draw(currentTime);
-        projectileManager.draw(currentTime);
-        powerUpManager.draw(currentTime);
-        levelManager.drawLevelText(currentTime); // Fade out do "LEVEL X"
+        this.player.draw(currentTime);
+        this.enemyManager.draw(currentTime);
+        this.projectileManager.draw(currentTime);
+        this.powerUpManager.draw(currentTime);
+        this.levelManager.drawLevelText(currentTime); 
     }
 }

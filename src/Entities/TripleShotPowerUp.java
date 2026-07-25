@@ -7,10 +7,9 @@ import java.awt.Color;
 public class TripleShotPowerUp extends PowerUp {
 
     public TripleShotPowerUp(double x, double y) {
-        // Mesma velocidade de queda e mesmo tamanho da bolinha verde
         super(x, y, 0.10, 10.0); 
     }
-
+    
     @Override
     public void applyEffect(Player player, long currentTime) {
         player.getPowerUpController().activateTripleShot(currentTime);

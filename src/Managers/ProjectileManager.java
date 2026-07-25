@@ -3,11 +3,11 @@ package Managers;
 import Entities.PlayerProjectile;
 import Entities.EnemyProjectile;
 import Utils.State;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectileManager {
+    
     private List<PlayerProjectile> playerProjectiles;
     private List<EnemyProjectile> enemyProjectiles;
 
@@ -17,16 +17,27 @@ public class ProjectileManager {
     }
 
     public void update(long currentTime, long delta) {
-        for (PlayerProjectile p : playerProjectiles) p.update(currentTime, delta);
-        for (EnemyProjectile e : enemyProjectiles) e.update(currentTime, delta);
+        for (PlayerProjectile p : this.playerProjectiles) {
+            p.update(currentTime, delta);
+        }
+        
+        for (EnemyProjectile e : this.enemyProjectiles) {
+            e.update(currentTime, delta);
+        }
 
-        playerProjectiles.removeIf(p -> p.getState() == State.INACTIVE);
-        enemyProjectiles.removeIf(e -> e.getState() == State.INACTIVE);
+        // Limpa todos os tiros que saíram da tela ou colidiram
+        this.playerProjectiles.removeIf(p -> p.getState() == State.INACTIVE);
+        this.enemyProjectiles.removeIf(e -> e.getState() == State.INACTIVE);
     }
 
     public void draw(long currentTime) {
-        for (PlayerProjectile p : playerProjectiles) p.draw(currentTime);
-        for (EnemyProjectile e : enemyProjectiles) e.draw(currentTime);
+        for (PlayerProjectile p : this.playerProjectiles) {
+            p.draw(currentTime);
+        }
+        
+        for (EnemyProjectile e : this.enemyProjectiles) {
+            e.draw(currentTime);
+        }
     }
 
     public List<PlayerProjectile> getPlayerProjectiles() { return playerProjectiles; }

@@ -5,7 +5,7 @@ import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.awt.Font; // Importação da Fonte adicionada
+import java.awt.Font;
 
 import javax.swing.JFrame;
 
@@ -40,7 +40,6 @@ public class GameLib {
 	public static final int KEY_ESCAPE = 5;
 	// Adicionado
 	public static final int KEY_SPACE = 6;
-	public static final int KEY_ENTER = 7;
 
 	private static MyFrame frame = null;
 	private static Graphics g = null;
@@ -126,7 +125,7 @@ public class GameLib {
 		drawLine(x4, y4, x1, y1);
 	}
 
-	// Nova função para desenhar a Estrela
+	// Novo método para desenhar a Estrela dos powerups
 	public static void drawStar(double x, double y, double radius) {
 		int numPoints = 10;
 		int[] xPoints = new int[numPoints];
@@ -176,7 +175,7 @@ public class GameLib {
 		g.fillRect(x, y, (int) Math.round(width), (int) Math.round(height));
 	}
 
-	// Nova função para escrever textos na tela de forma centralizada e grossa
+	// Novo método para escrever textos centralizados na tela
 	public static void drawTextCentered(String text, double x, double y, int size) {
 		if (g != null) {
 			Font font = new Font("Arial", Font.BOLD, size);
@@ -244,9 +243,8 @@ class MyKeyAdapter extends KeyAdapter{
 					KeyEvent.VK_RIGHT, 
 					KeyEvent.VK_CONTROL,
 					KeyEvent.VK_ESCAPE,
-					// Adicionado!
-					KeyEvent.VK_SPACE,
-					KeyEvent.VK_ENTER
+					// Adicionado o SPACE
+					KeyEvent.VK_SPACE
 				};
 	
 	private boolean [] keyStates = null;

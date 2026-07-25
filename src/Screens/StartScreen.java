@@ -5,17 +5,18 @@ import Utils.GameLib;
 import java.awt.Color;
 
 public class StartScreen implements Screen {
+    
     private ScreenManager screenManager;
 
     public StartScreen(ScreenManager screenManager) {
         this.screenManager = screenManager;
     }
 
+    // Verificação da tecla pressionada para iniciar o jogo 
     @Override
     public void update(long currentTime, long delta) {
-        if (GameLib.iskeyPressed(GameLib.KEY_SPACE) || GameLib.iskeyPressed(GameLib.KEY_ENTER)) {
-            // Passa para a tela do jogo!
-            screenManager.setScreen(new PlayingScreen(screenManager, currentTime));
+        if (GameLib.iskeyPressed(GameLib.KEY_SPACE)) {
+            this.screenManager.setScreen(new PlayingScreen(this.screenManager, currentTime));
         }
     }
 

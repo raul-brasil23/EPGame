@@ -3,6 +3,7 @@ package Behaviors;
 import Entities.Entity;
 
 public class CircularMovement implements MovementBehavior {
+    
     private double v;
     private double angle;
     private double rv;
@@ -13,6 +14,7 @@ public class CircularMovement implements MovementBehavior {
         this.rv = rv;
     }
 
+    // Calcula a nova posição utilizando coordenadas polares para um movimento em "arco"
     @Override
     public void move(Entity entity, long delta) {
         entity.setX(entity.getX() + (this.v * Math.cos(this.angle) * delta));
