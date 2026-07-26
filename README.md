@@ -71,4 +71,4 @@ java -cp bin Main
 * **Giovane Giroldo da Silva**
 * **Pedro Botelho Gondim Dantas**
 * **Raul Brasil de Sousa**
-*Projeto Acadêmico (EP-COO)*
+* *Projeto Acadêmico (EP-COO)*
