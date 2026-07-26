@@ -42,15 +42,21 @@ Para garantir a execução perfeita em qualquer computador ou sistema operaciona
 ### Passo a Passo
 
 **1. Clone ou baixe o projeto e navegue até a pasta raiz:**
-`cd caminho/para/a/pasta/do/projeto`
+```bash
+cd caminho/para/a/pasta/do/projeto
+```
 
 **2. Compile o código-fonte:**
 Este comando lerá todos os arquivos `.java` da pasta `src` e criará os binários compilados de forma organizada dentro da pasta `bin`.
-`javac -d bin -sourcepath src src/Main.java`
+```bash
+javac -d bin -sourcepath src src/Main.java
+```
 
 **3. Execute o Jogo:**
 Inicie o programa a partir da pasta raiz. Isso garante que o jogo consiga localizar e ler corretamente os arquivos da pasta `Levels/`.
-`java -cp bin Main`
+```bash
+java -cp bin Main
+```
 
 ---
 
@@ -64,6 +70,7 @@ Inicie o programa a partir da pasta raiz. Isso garante que o jogo consiga locali
 ---
 
 ## 👨‍💻 Desenvolvido por
-* **Giovane Giroldo da Silva** - *Projeto Acadêmico (EP-COO)*
-* **Pedro Botelho Gondim Dantas** - *Projeto Acadêmico (EP-COO)*
-* **Raul Brasil de Sousa** - *Projeto Acadêmico (EP-COO)*
+* **Giovane Giroldo da Silva**
+* **Pedro Botelho Gondim Dantas**
+* **Raul Brasil de Sousa**
+*Projeto Acadêmico (EP-COO)*
