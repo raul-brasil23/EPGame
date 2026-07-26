@@ -1,0 +1,27 @@
+Integrantes do grupo:
+Giovane Giroldo da Silva - 17017650
+Pedro Botelho Gondim Dantas - 17075072
+Raul Brasil de Sousa - 17015151
+
+Para garantir a execução correta do jogo em qualquer sistema operacional (Windows, Linux ou macOS) e evitar conflitos com configurações de IDEs, recomendamos que a compilação e a execução sejam feitas via linha de comando (Terminal, CMD ou PowerShell).
+
+Pré-requisitos:
+- Possuir o Java Development Kit (JDK) instalado na máquina.
+- Garantir que a estrutura de pastas originais do projeto (src/, bin/ e Levels/) esteja intacta.
+
+Passo 1: Navegar até a raiz do projeto
+Abra o terminal de sua preferência e navegue até a pasta principal do projeto (onde as pastas src e bin estão localizadas).
+
+Passo 2: Compilar o código fonte
+No terminal, execute o seguinte comando para compilar o projeto:
+
+javac -d bin -sourcepath src src/Main.java
+
+Nota técnica: O argumento -d bin garante que todos os arquivos .class gerados sejam organizados automaticamente dentro da pasta bin/, mantendo o diretório src/ limpo. O argumento -sourcepath src garante que o compilador encontre todas as dependências corretamente.
+
+Passo 3: Executar o programa
+Após a compilação bem-sucedida, inicie o jogo com o comando:
+
+java -cp bin Main
+
+Nota técnica: O argumento -cp bin (classpath) orienta a Máquina Virtual Java a procurar os arquivos compilados dentro da pasta bin/. Executar o programa a partir da raiz do projeto garante que caminhos relativos (como a leitura dos arquivos de configuração em Levels/) sejam resolvidos corretamente pelo sistema.
