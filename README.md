@@ -42,9 +42,7 @@ Para garantir a execução perfeita em qualquer computador ou sistema operaciona
 ### Passo a Passo
 
 **1. Clone ou baixe o projeto e navegue até a pasta raiz:**
-```bash
-cd caminho/para/a/pasta/do/projeto
-```
+Abra o terminal de sua preferência e navegue até a pasta principal do projeto (onde as pastas src e bin estão localizadas).
 
 **2. Compile o código-fonte:**
 Este comando lerá todos os arquivos `.java` da pasta `src` e criará os binários compilados de forma organizada dentro da pasta `bin`.
